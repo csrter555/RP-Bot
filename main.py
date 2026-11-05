@@ -27,6 +27,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
+# Initializing client with configuration arguments
 client = commands.Bot(
     command_prefix=">",
     intents=intents,
@@ -116,34 +117,37 @@ class MainTestView(discord.ui.LayoutView):
     name="test", description="...", guild=discord.Object(id=int(GUILD_ID))
 )
 async def test_command(interaction: discord.Interaction):
-  # Generates an isolated instance every time someone runs the command
   view = MainTestView()
   await interaction.response.send_message(view=view)
 
 
-# --- Core Lifecyle Loop ---
+# --- Lifecycle Setup Hook Implementation ---
+
+
+async def custom_setup_hook():
+  # Loads your cogs safely inside the execution context window
+  await load_commands()
+  await load_utils()
+
+  if GUILD_ID:
+    try:
+      print("Synchronizing command tree to testing guild...")
+      guild_obj = discord.Object(id=int(GUILD_ID))
+      client.tree.copy_global_to(guild=guild_obj)
+      synced = await client.tree.sync(guild=guild_obj)
+      print(f"Successfully synced {len(synced)} commands to guild.")
+    except Exception as e:
+      print(f"Command sync failed: {e}")
+  else:
+    print("Warning: GUILD_ID missing from environment variables.")
+
+
+# Hook assignment into the engine configuration registry
+client.setup_hook = custom_setup_hook
 
 
 async def main():
   async with client:
-    # 1. Load extensions into client engine memory first
-    await load_commands()
-    await load_utils()
-
-    # 2. Synchronize layout commands onto the Discord back-end
-    if GUILD_ID:
-      try:
-        print("Synchronizing command tree to testing guild...")
-        # Copy global commands to our guild tree registry so they sync instantly
-        client.tree.copy_global_to(guild=discord.Object(id=int(GUILD_ID)))
-        synced = await client.tree.sync(guild=discord.Object(id=int(GUILD_ID)))
-        print(f"Successfully synced {len(synced)} commands to guild.")
-      except Exception as e:
-        print(f"Command sync failed: {e}")
-    else:
-      print("Warning: GUILD_ID missing from environment variables.")
-
-    # 3. Establish active gateway socket connection
     await client.start(TOKEN)
 
 
