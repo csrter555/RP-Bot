@@ -32,7 +32,6 @@ START_TIME = time.time()
 
 
 async def load_commands():
-  # Crucial Fix: ensure the folder path matches the extension dot-path
   if os.path.exists("./cogs"):
     for filename in os.listdir("./cogs"):
       if filename.endswith(".py") and filename != "__init__.py":
@@ -58,19 +57,11 @@ async def load_utils():
 async def on_ready():
   print(f"Logged in as {client.user} (ID: {client.user.id})")
 
-  # Sync commands
-  if GUILD_ID:
-    try:
-      synced = await client.tree.sync(guild=discord.Object(id=int(GUILD_ID)))
-      print(f"Synced {len(synced)} commands to guild.")
-    except Exception as e:
-      print(f"Command sync failed: {e}")
+
+# --- Main.py Layout Components ---
 
 
-# --- Components V2 Layout System ---
-
-
-class Layout(discord.ui.Container):
+class MainLayout(discord.ui.Container):
 
   accent_color = discord.Color.blue()
 
@@ -100,34 +91,54 @@ class Layout(discord.ui.Container):
   async def bbb(
       self, interaction: discord.Interaction, select: discord.ui.Select
   ):
-    # Fixed select values parsing
-    selected_value = select.values[0] if select.values else "None"
+    selected_value = select.values if select.values else "None"
     await interaction.response.send_message(
         f"You selected: {selected_value}", ephemeral=True
     )
 
 
-# Standardizing Layout View sub-class to avoid multi-execution state issues
-class TestView(discord.ui.LayoutView):
+class MainTestView(discord.ui.LayoutView):
 
   def __init__(self):
     super().__init__()
-    self.add_item(Layout())
+    self.add_item(MainLayout())
+
+
+# --- Slash Commands ---
 
 
 @client.tree.command(
     name="test", description="...", guild=discord.Object(id=int(GUILD_ID))
 )
 async def test_command(interaction: discord.Interaction):
-  # Fresh view assigned per command interaction execution
-  view = TestView()
+  # Generates an isolated instance every time someone runs the command
+  view = MainTestView()
   await interaction.response.send_message(view=view)
+
+
+# --- Core Lifecyle Loop ---
 
 
 async def main():
   async with client:
+    # 1. Load extensions into client engine memory first
     await load_commands()
-    await load_utils()  # Remembered to invoke utility loaders
+    await load_utils()
+
+    # 2. Synchronize layout commands onto the Discord back-end
+    if GUILD_ID:
+      try:
+        print("Synchronizing command tree to testing guild...")
+        # Copy global commands to our guild tree registry so they sync instantly
+        client.tree.copy_global_to(guild=discord.Object(id=int(GUILD_ID)))
+        synced = await client.tree.sync(guild=discord.Object(id=int(GUILD_ID)))
+        print(f"Successfully synced {len(synced)} commands to guild.")
+      except Exception as e:
+        print(f"Command sync failed: {e}")
+    else:
+      print("Warning: GUILD_ID missing from environment variables.")
+
+    # 3. Establish active gateway socket connection
     await client.start(TOKEN)
 
 
