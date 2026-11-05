@@ -21,12 +21,17 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 GUILD_ID = os.getenv("GUILD_ID")
+APPLICATION_ID = os.getenv("APPLICATION_ID")
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-client = commands.Bot(command_prefix=">", intents=intents)
+client = commands.Bot(
+    command_prefix=">",
+    intents=intents,
+    application_id=int(APPLICATION_ID) if APPLICATION_ID else None,
+)
 
 START_TIME = time.time()
 
