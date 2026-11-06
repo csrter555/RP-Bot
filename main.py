@@ -118,7 +118,9 @@ class MainTestView(discord.ui.LayoutView):
 )
 async def test_command(interaction: discord.Interaction):
   view = MainTestView()
-  await interaction.response.send_message(view=view)
+  await interaction.response.defer(ephemeral=True)
+  await interaction.channel.send()
+  await interaction.delete_original_response()
 
 
 # --- Lifecycle Setup Hook Implementation ---
