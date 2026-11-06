@@ -109,17 +109,13 @@ class MainTestView(discord.ui.LayoutView):
     super().__init__()
     self.add_item(MainLayout())
 
-
-# --- Slash Commands ---
-
-
 @client.tree.command(
     name="test", description="...", guild=discord.Object(id=int(GUILD_ID))
 )
 async def test_command(interaction: discord.Interaction):
   view = MainTestView()
   await interaction.response.defer(ephemeral=True)
-  await interaction.channel.send()
+  await interaction.channel.send(view=view)
   await interaction.delete_original_response()
 
 
