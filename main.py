@@ -119,6 +119,56 @@ async def test_command(interaction: discord.Interaction):
   await interaction.delete_original_response()
 
 
+class MainLayout(discord.ui.Container):
+
+  accent_color = discord.Color.blue()
+
+  first = discord.ui.TextDisplay(
+      "Test.... (You CAN SEE THIS??? the bot may be coming soon?!)"
+  )
+
+  button_row = discord.ui.ActionRow()
+  select_row = discord.ui.ActionRow()
+
+  @button_row.button(label="Test Button", style=discord.ButtonStyle.primary)
+  async def aaa(
+      self, interaction: discord.Interaction, button: discord.ui.Button
+  ):
+    await interaction.response.send_message(
+        "You clicked the button!", ephemeral=True
+    )
+
+  @select_row.select(
+      placeholder="Test",
+      options=[
+          discord.SelectOption(label="Option 1", value="option1"),
+          discord.SelectOption(label="Option 2", value="option2"),
+          discord.SelectOption(label="Option 3", value="option3"),
+      ],
+  )
+  async def bbb(
+      self, interaction: discord.Interaction, select: discord.ui.Select
+  ):
+    selected_value = select.values if select.values else "None"
+    await interaction.response.send_message(
+        f"You selected: {selected_value}", ephemeral=True
+    )
+
+
+class MainTestView(discord.ui.LayoutView):
+
+  def __init__(self):
+    super().__init__()
+    self.add_item(MainLayout())
+
+@client.tree.command(
+    name="test1.a", description="...", guild=discord.Object(id=int(GUILD_ID))
+)
+async def test_command(interaction: discord.Interaction):
+  view = MainTestView()
+  await interaction.response.send_message(view=view)
+
+
 # --- Lifecycle Setup Hook Implementation ---
 
 
