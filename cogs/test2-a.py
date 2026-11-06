@@ -29,7 +29,7 @@ class TestView(discord.ui.LayoutView):
         self.add_item(Layout())
 
 # 3. Create the Cog class to hold your application command
-class Test2Cog(commands.Cog):
+class Test2aCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -42,4 +42,4 @@ class Test2Cog(commands.Cog):
 
 # 4. The critical missing setup function
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Test2Cog(bot))
+    await bot.add_cog(Test2aCog(bot))
