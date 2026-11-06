@@ -162,7 +162,7 @@ class MainTestView(discord.ui.LayoutView):
     self.add_item(MainLayout())
 
 @client.tree.command(
-    name="test1.a", description="...", guild=discord.Object(id=int(GUILD_ID))
+    name="test1-a", description="...", guild=discord.Object(id=int(GUILD_ID))
 )
 async def test_command(interaction: discord.Interaction):
   view = MainTestView()
