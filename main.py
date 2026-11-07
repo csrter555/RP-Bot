@@ -27,7 +27,6 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-# Initializing client with configuration arguments
 client = commands.Bot(
     command_prefix=">",
     intents=intents,
@@ -64,116 +63,86 @@ async def on_ready():
   print(f"Logged in as {client.user} (ID: {client.user.id})")
 
 
-# --- Main.py Layout Components ---
+class MainLayout(discord.ui.Container):
+    def __init__(self):
+        self.button_row = discord.ui.ActionRow()
+        self.select_row = discord.ui.ActionRow()
+        
+        super().__init__(
+            discord.ui.TextDisplay("Test.... (You CAN SEE THIS??? the bot may be coming soon?!)"),
+            self.button_row,
+            self.select_row,
+            accent_color=discord.Color.blue()
+        )
+
+        @self.button_row.button(label="Test Button", style=discord.ButtonStyle.primary)
+        async def aaa(interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.send_message("You clicked the button!", ephemeral=True)
+
+        @self.select_row.select(
+            placeholder="Test",
+            options=[
+                discord.SelectOption(label="Option 1", value="option1"),
+                discord.SelectOption(label="Option 2", value="option2"),
+                discord.SelectOption(label="Option 3", value="option3"),
+            ],
+        )
+        async def bbb(interaction: discord.Interaction, select: discord.ui.Select):
+            selected_value = select.values if select.values else ["None"]
+            await interaction.response.send_message(f"You selected: {selected_value}", ephemeral=True)
+
+class MainTestView(discord.ui.LayoutView):
+    def __init__(self):
+        super().__init__()
+        self.add_item(MainLayout())
+
+@client.hybrid_command(name="test", description="...")
+async def test_command(ctx: commands.Context):
+    view = MainTestView()
+    await ctx.defer(ephemeral=True)
+    await ctx.send(view=view)
 
 
 class MainLayout(discord.ui.Container):
+    def __init__(self):
+        self.button_row = discord.ui.ActionRow()
+        self.select_row = discord.ui.ActionRow()
+        
+        super().__init__(
+            discord.ui.TextDisplay("Test.... (You CAN SEE THIS??? the bot may be coming soon?!)"),
+            self.button_row,
+            self.select_row,
+            accent_color=discord.Color.blue()
+        )
 
-  accent_color = discord.Color.blue()
+        @self.button_row.button(label="Test Button", style=discord.ButtonStyle.primary)
+        async def aaa(interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.send_message("You clicked the button!", ephemeral=True)
 
-  first = discord.ui.TextDisplay(
-      "Test.... (You CAN SEE THIS??? the bot may be coming soon?!)"
-  )
-
-  button_row = discord.ui.ActionRow()
-  select_row = discord.ui.ActionRow()
-
-  @button_row.button(label="Test Button", style=discord.ButtonStyle.primary)
-  async def aaa(
-      self, interaction: discord.Interaction, button: discord.ui.Button
-  ):
-    await interaction.response.send_message(
-        "You clicked the button!", ephemeral=True
-    )
-
-  @select_row.select(
-      placeholder="Test",
-      options=[
-          discord.SelectOption(label="Option 1", value="option1"),
-          discord.SelectOption(label="Option 2", value="option2"),
-          discord.SelectOption(label="Option 3", value="option3"),
-      ],
-  )
-  async def bbb(
-      self, interaction: discord.Interaction, select: discord.ui.Select
-  ):
-    selected_value = select.values if select.values else "None"
-    await interaction.response.send_message(
-        f"You selected: {selected_value}", ephemeral=True
-    )
-
+        @self.select_row.select(
+            placeholder="Test",
+            options=[
+                discord.SelectOption(label="Option 1", value="option1"),
+                discord.SelectOption(label="Option 2", value="option2"),
+                discord.SelectOption(label="Option 3", value="option3"),
+            ],
+        )
+        async def bbb(interaction: discord.Interaction, select: discord.ui.Select):
+            selected_value = select.values if select.values else ["None"]
+            await interaction.response.send_message(f"You selected: {selected_value}", ephemeral=True)
 
 class MainTestView(discord.ui.LayoutView):
+    def __init__(self):
+        super().__init__()
+        self.add_item(MainLayout())
 
-  def __init__(self):
-    super().__init__()
-    self.add_item(MainLayout())
-
-@client.hybrid_command(
-    name="test", description="...", guild=discord.Object(id=int(GUILD_ID))
-)
-async def test_command(interaction: discord.Interaction):
-  view = MainTestView()
-  await interaction.response.defer(ephemeral=True)
-  await interaction.channel.send(view=view)
-  await interaction.delete_original_response()
-
-
-class MainLayout(discord.ui.Container):
-
-  accent_color = discord.Color.blue()
-
-  first = discord.ui.TextDisplay(
-      "Test.... (You CAN SEE THIS??? the bot may be coming soon?!)"
-  )
-
-  button_row = discord.ui.ActionRow()
-  select_row = discord.ui.ActionRow()
-
-  @button_row.button(label="Test Button", style=discord.ButtonStyle.primary)
-  async def aaa(
-      self, interaction: discord.Interaction, button: discord.ui.Button
-  ):
-    await interaction.response.send_message(
-        "You clicked the button!", ephemeral=True
-    )
-
-  @select_row.select(
-      placeholder="Test",
-      options=[
-          discord.SelectOption(label="Option 1", value="option1"),
-          discord.SelectOption(label="Option 2", value="option2"),
-          discord.SelectOption(label="Option 3", value="option3"),
-      ],
-  )
-  async def bbb(
-      self, interaction: discord.Interaction, select: discord.ui.Select
-  ):
-    selected_value = select.values if select.values else "None"
-    await interaction.response.send_message(
-        f"You selected: {selected_value}", ephemeral=True
-    )
-
-
-class MainTestView(discord.ui.LayoutView):
-
-  def __init__(self):
-    super().__init__()
-    self.add_item(MainLayout())
-
-@client.hybrid_command(
-    name="test1-a", description="...", guild=discord.Object(id=int(GUILD_ID))
-)
-async def test_command(interaction: discord.Interaction):
-  view = MainTestView()
-  await interaction.response.send_message(view=view)
-
-
-# --- Lifecycle Setup Hook Implementation ---
+@client.hybrid_command(name="test", description="...")
+async def test_command(ctx: commands.Context):
+    view = MainTestView()
+    await ctx.send(view=view)
 
 
 async def custom_setup_hook():
-  # Loads your cogs safely inside the execution context window
   await load_commands()
   await load_utils()
 
@@ -190,7 +159,6 @@ async def custom_setup_hook():
     print("Warning: GUILD_ID missing from environment variables.")
 
 
-# Hook assignment into the engine configuration registry
 client.setup_hook = custom_setup_hook
 
 
