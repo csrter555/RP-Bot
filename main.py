@@ -109,7 +109,7 @@ class MainTestView(discord.ui.LayoutView):
     super().__init__()
     self.add_item(MainLayout())
 
-@client.tree.command(
+@client.hybrid_command(
     name="test", description="...", guild=discord.Object(id=int(GUILD_ID))
 )
 async def test_command(interaction: discord.Interaction):
@@ -161,7 +161,7 @@ class MainTestView(discord.ui.LayoutView):
     super().__init__()
     self.add_item(MainLayout())
 
-@client.tree.command(
+@client.hybrid_command(
     name="test1-a", description="...", guild=discord.Object(id=int(GUILD_ID))
 )
 async def test_command(interaction: discord.Interaction):

@@ -33,7 +33,7 @@ class Test2aCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="test2-a", description="Testing Components V2 inside a Cog")
+    @commands.hybrid_command(name="test2-a", description="Testing Components V2 inside a Cog")
     async def test2_command(self, interaction: discord.Interaction):
      view = TestView()
      await interaction.response.defer(ephemeral=True)
