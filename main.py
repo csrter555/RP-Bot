@@ -99,9 +99,9 @@ class MainTestView(discord.ui.LayoutView):
 @client.hybrid_command(name="test", description="Run the original test layout view")
 async def test_command(ctx: commands.Context):
     view = MainTestView()
-    await ctx.defer(ephemeral=True)
+    if ctx.interaction:
+        await ctx.interaction.response.defer(ephemeral=True)
     await ctx.channel.send(view=view)
-    await ctx.delete_original_response()
 
 
 @client.hybrid_command(name="test-a", description="Run the duplicate test-a view")

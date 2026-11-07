@@ -36,7 +36,9 @@ class Test2Cog(commands.Cog):
     @commands.hybrid_command(name="test2", description="Testing Components V2 inside a Cog")
     async def test2_command(self, ctx: commands.Context):
         view = TestView()
-        await ctx.send(view=view)
+        if ctx.interaction:
+         await ctx.interaction.response.defer(ephemeral=True)
+        await ctx.channel.send(view=view)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Test2Cog(bot))
