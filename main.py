@@ -62,54 +62,6 @@ async def load_utils():
 async def on_ready():
     print(f"Logged in as {client.user} (ID: {client.user.id})")
 
-
-
-class MainLayout(discord.ui.Container):
-    accent_color = discord.Color.blue()
-
-    first = discord.ui.TextDisplay(
-        "Test.... (You CAN SEE THIS??? the bot may be coming soon?!)"
-    )
-
-    button_row = discord.ui.ActionRow()
-    select_row = discord.ui.ActionRow()
-
-    @button_row.button(label="Test Button", style=discord.ButtonStyle.primary)
-    async def aaa(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("You clicked the button!", ephemeral=True)
-
-    @select_row.select(
-        placeholder="Test",
-        options=[
-            discord.SelectOption(label="Option 1", value="option1"),
-            discord.SelectOption(label="Option 2", value="option2"),
-            discord.SelectOption(label="Option 3", value="option3"),
-        ],
-    )
-    async def bbb(self, interaction: discord.Interaction, select: discord.ui.Select):
-        selected_value = select.values if select.values else ["None"]
-        await interaction.response.send_message(f"You selected: {selected_value}", ephemeral=True)
-
-
-class MainTestView(discord.ui.LayoutView):
-    def __init__(self):
-        super().__init__()
-        self.add_item(MainLayout())
-
-@client.hybrid_command(name="test", description="Run the original test layout view")
-async def test_command(ctx: commands.Context):
-    view = MainTestView()
-    if ctx.interaction:
-        await ctx.interaction.response.defer(ephemeral=True)
-    await ctx.channel.send(view=view)
-
-
-@client.hybrid_command(name="test-a", description="Run the duplicate test-a view")
-async def test_a_command(ctx: commands.Context):
-    view = MainTestView()
-    await ctx.send(view=view)
-
-
 async def custom_setup_hook():
     await load_commands()
     await load_utils()
@@ -132,7 +84,5 @@ client.setup_hook = custom_setup_hook
 async def main():
     async with client:
         await client.start(TOKEN)
-
-
 if __name__ == "__main__":
     asyncio.run(main())
