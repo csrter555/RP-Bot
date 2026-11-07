@@ -136,7 +136,7 @@ class MainTestView(discord.ui.LayoutView):
         super().__init__()
         self.add_item(MainLayout())
 
-@client.hybrid_command(name="test", description="...")
+@client.hybrid_command(name="test-a", description="...")
 async def test_command(ctx: commands.Context):
     view = MainTestView()
     await ctx.send(view=view)
